@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  server:
+    build: ./server
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/mydatabase
+
+  client:
+    build: ./client
+    ports:
+      - "3001:3000"
+    depends_on:
+      - server
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+
