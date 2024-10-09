@@ -1,0 +1,49 @@
+# Specifies the version of the Docker Compose file format being used.
+version: '3.8'
+# In Docker Compose, services define the different components (containers) that make up your application.
+services:
+  server:
+    build: ./server
+    # Tells Docker Compose to build the Docker image for the server service using the Dockerfile in the ./server directory.
+    ports:
+      - "3000:3000"
+    #  Maps port 3000 on the host machine to port 3000 inside the container.
+    depends_on:
+    # Specifies that the server service depends on the mongo service.
+      - mongo
+    networks:
+    #  Connects the server service to the app-network network.
+      - app-network
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/mydatabase
+      - PORT=3000
+
+  client:
+    build: ./client
+    ports:
+      - "3001:3000"
+    depends_on:
+      - server
+    networks:
+      - app-network
+
+  mongo:
+  # Pulls the latest official MongoDB image from Docker Hub.
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+  # Mounts the volume mongo-data to /data/db inside the container.
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+networks:
+# Defines a network named app-network and sets the driver to bridge.
+  app-network:
+    driver: bridge
+
+volumes:
+# Defines a named volume called mongo-data.
+# Docker volumes are used to persist data created by and used by Docker containers.
+  mongo-data:

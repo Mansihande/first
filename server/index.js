@@ -19,6 +19,7 @@ const Item = mongoose.model('Item', ItemSchema);
 app.get('/api/items', async (req, res) => {
   try {
     const items = await Item.find();
+    
     res.json(items);
   } catch (error) {
     console.error('Error fetching items:', error);
